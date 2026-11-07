@@ -1,0 +1,557 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a1a2e">
+<title>高中公式手册</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  min-height: 100vh; background-attachment: fixed; color: var(--text);
+  transition: background .4s, color .3s;
+  --text: #2b2b2b; --text-soft: #5a5a5a;
+  --card-bg: rgba(255,255,255,.78); --card-border: rgba(0,0,0,.06);
+  --accent: #7f5af0; --accent-soft: rgba(127,90,240,.12);
+  --shadow: 0 4px 20px rgba(0,0,0,.06); --topbar-bg: rgba(255,255,255,.6);
+}
+body.dark {
+  --text: #e8e8f0; --text-soft: #a8a8b8;
+  --card-bg: rgba(26,26,40,.66); --card-border: rgba(255,255,255,.08);
+  --accent: #9d7bff; --accent-soft: rgba(157,123,255,.18);
+  --shadow: 0 4px 20px rgba(0,0,0,.3); --topbar-bg: rgba(16,16,28,.6);
+}
+#app { max-width: 760px; margin: 0 auto; padding: 0 14px 100px; }
+.topbar {
+  position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 8px;
+  padding: 12px 18px; background: var(--topbar-bg);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--card-border); margin: 0 -14px;
+}
+.topbar h1 { flex: 1; font-size: 18px; margin: 0; text-align: center; font-weight: 600; }
+.icon-btn { background: transparent; border: none; font-size: 20px; color: var(--text); cursor: pointer; padding: 6px 8px; border-radius: 10px; line-height: 1; }
+.icon-btn:active { background: var(--accent-soft); }
+.search-wrap { display: flex; gap: 8px; margin: 12px 0; }
+.search-wrap input { flex: 1; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text); font-size: 15px; outline: none; backdrop-filter: blur(10px); }
+.search-wrap input:focus { border-color: var(--accent); }
+.search-wrap .icon-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 0 14px; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(360px, 86vw); background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-left: 1px solid var(--card-border); padding: 20px 18px; overflow-y: auto; z-index: 50; box-shadow: -8px 0 30px rgba(0,0,0,.15); transition: transform .3s; }
+.drawer.hidden { transform: translateX(110%); }
+.drawer h2 { font-size: 17px; margin: 0 0 14px; }
+.filter-group { margin-bottom: 16px; }
+.filter-group > label { display: block; font-size: 13px; color: var(--text-soft); margin-bottom: 8px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 7px 14px; border-radius: 20px; font-size: 13px; border: 1px solid var(--card-border); background: rgba(128,128,128,.08); color: var(--text); cursor: pointer; transition: all .2s; }
+.chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn { display: block; width: 100%; padding: 11px; margin-top: 8px; border-radius: 12px; border: none; font-size: 14px; background: var(--accent); color: #fff; cursor: pointer; }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--card-border); }
+.bg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
+.bg-item { cursor: pointer; text-align: center; font-size: 11px; color: var(--text-soft); }
+.bg-item .bg-preview { height: 52px; border-radius: 10px; border: 2px solid transparent; margin-bottom: 4px; transition: border-color .2s; }
+.bg-item.active .bg-preview { border-color: var(--accent); }
+.gradient-picker { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+.gradient-picker input[type=color] { width: 40px; height: 36px; border: none; border-radius: 8px; padding: 0; background: none; }
+.gradient-picker .btn { margin-top: 0; flex: 1; }
+.group-title { font-size: 14px; color: var(--accent); font-weight: 600; margin: 22px 0 10px; padding-left: 4px; letter-spacing: .5px; }
+.formula-list { display: flex; flex-direction: column; gap: 12px; }
+.card { background: var(--card-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px 16px 14px; box-shadow: var(--shadow); transition: transform .2s; }
+.card:active { transform: scale(.995); }
+.card-head { display: flex; align-items: flex-start; gap: 8px; }
+.card-title { flex: 1; font-size: 15px; margin: 0; font-weight: 600; }
+.card-actions { display: flex; gap: 2px; }
+.card-actions .icon-btn { font-size: 16px; padding: 4px 6px; }
+.fav-btn.active { color: #f5a623; }
+.formula { font-size: 18px; text-align: center; padding: 12px 4px; overflow-x: auto; color: var(--text); }
+.formula .katex { font-size: 1.15em; }
+.section { margin-top: 10px; }
+.section .label { display: inline-block; font-size: 11px; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 6px; margin-bottom: 6px; }
+.variant { font-size: 13px; color: var(--text-soft); padding: 3px 0 3px 10px; border-left: 2px solid var(--accent-soft); margin-bottom: 4px; font-family: "Cambria Math", "Times New Roman", serif; }
+.section .text { font-size: 13px; color: var(--text-soft); line-height: 1.6; }
+.meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.meta-item { font-size: 12px; color: var(--text-soft); background: rgba(128,128,128,.08); padding: 4px 10px; border-radius: 8px; }
+.meta-item b { color: var(--accent); margin-right: 4px; font-weight: 500; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tag { font-size: 11px; padding: 3px 9px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); }
+.empty-tip { text-align: center; color: var(--text-soft); padding: 60px 0; font-size: 14px; }
+.hidden { display: none !important; }
+.fab { position: fixed; right: 22px; bottom: 28px; z-index: 40; width: 56px; height: 56px; border-radius: 50%; border: none; background: var(--accent); color: #fff; font-size: 28px; box-shadow: 0 6px 20px rgba(127,90,240,.4); cursor: pointer; line-height: 1; }
+.modal { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.45); backdrop-filter: blur(4px); display: flex; align-items: flex-end; justify-content: center; }
+.modal-card { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); width: 100%; max-width: 760px; max-height: 88vh; overflow-y: auto; border-radius: 22px 22px 0 0; padding: 22px 20px 30px; box-shadow: 0 -8px 30px rgba(0,0,0,.2); }
+.modal-card h2 { margin: 0 0 16px; font-size: 18px; }
+.modal-card label { display: block; font-size: 13px; color: var(--text-soft); margin-bottom: 12px; }
+.modal-card input, .modal-card textarea, .modal-card select { width: 100%; margin-top: 5px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--card-border); background: rgba(128,128,128,.08); color: var(--text); font-size: 14px; font-family: inherit; outline: none; }
+.modal-card input:focus, .modal-card textarea:focus, .modal-card select:focus { border-color: var(--accent); }
+.modal-card textarea { resize: vertical; }
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.modal-actions .btn { margin-top: 0; }
+.hint { font-size: 12px; color: var(--text-soft); line-height: 1.5; }
+.toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: rgba(30,30,40,.92); color: #fff; padding: 10px 20px; border-radius: 12px; font-size: 14px; z-index: 80; box-shadow: 0 4px 20px rgba(0,0,0,.3); animation: toastIn .3s ease; }
+@keyframes toastIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@media (max-width: 480px) { .card { padding: 14px 14px 12px; border-radius: 16px; } .formula { font-size: 16px; } .topbar h1 { font-size: 16px; } }
+</style>
+</head>
+<body class="light">
+<div id="app">
+  <header class="topbar">
+    <button id="btn-filter" class="icon-btn" aria-label="筛选">⛃</button>
+    <h1>高中公式手册</h1>
+    <button id="btn-settings" class="icon-btn" aria-label="设置">⚙</button>
+  </header>
+  <div class="search-wrap">
+    <input id="search-input" type="search" placeholder="搜索公式、关键词…" autocomplete="off">
+  </div>
+  <aside id="filter-panel" class="drawer hidden">
+    <h2>筛选</h2>
+    <div class="filter-group"><label>学科</label><div id="filter-subject" class="chip-row"></div></div>
+    <div class="filter-group"><label>年级</label><div id="filter-grade" class="chip-row"></div></div>
+    <div class="filter-group"><label>模块</label><div id="filter-module" class="chip-row"></div></div>
+    <div class="filter-group"><label>标签</label><div id="filter-tag" class="chip-row"></div></div>
+    <div class="filter-group"><label><input type="checkbox" id="only-fav"> 只看收藏</label></div>
+    <button id="btn-clear-filter" class="btn">清空筛选</button>
+    <button id="btn-close-filter" class="btn btn-ghost">关闭</button>
+  </aside>
+  <aside id="settings-panel" class="drawer hidden">
+    <h2>外观设置</h2>
+    <div class="filter-group"><label>主题</label><div class="chip-row">
+      <button class="chip" data-theme="light">浅色</button>
+      <button class="chip" data-theme="dark">深色</button>
+      <button class="chip" data-theme="auto">跟随系统</button>
+    </div></div>
+    <div class="filter-group"><label>背景类别</label><div id="bg-categories" class="chip-row"></div></div>
+    <div class="filter-group"><label>选择背景</label><div id="bg-grid" class="bg-grid"></div></div>
+    <div class="filter-group"><label>自定义背景</label>
+      <input type="file" id="bg-upload" accept="image/*" hidden>
+      <button class="btn" id="btn-upload-bg">上传图片作背景</button>
+      <div class="gradient-picker">
+        <input type="color" id="grad-c1" value="#1a1a2e">
+        <input type="color" id="grad-c2" value="#16213e">
+        <button class="btn" id="btn-apply-grad">应用渐变色</button>
+      </div>
+    </div>
+    <div class="filter-group"><label>数据</label>
+      <button class="btn" id="btn-export">导出备份</button>
+      <button class="btn" id="btn-import">导入备份</button>
+      <button class="btn" id="btn-batch">批量导入公式</button>
+      <input type="file" id="import-file" accept=".json" hidden>
+    </div>
+    <button id="btn-close-settings" class="btn btn-ghost">关闭</button>
+  </aside>
+  <main id="content">
+    <div id="formula-list" class="formula-list"></div>
+    <div id="empty-tip" class="empty-tip hidden">没有匹配的公式</div>
+  </main>
+  <button id="btn-add" class="fab" aria-label="添加公式">＋</button>
+  <div id="edit-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2 id="edit-title">添加公式</h2>
+      <label>标题<input id="f-title" type="text" placeholder="如：勾股定理"></label>
+      <label>公式（支持 LaTeX，如 a^2+b^2=c^2）<textarea id="f-latex" rows="2"></textarea></label>
+      <label>等价变形（每行一条）<textarea id="f-variants" rows="3"></textarea></label>
+      <label>典型应用/思路<textarea id="f-usage" rows="3"></textarea></label>
+      <label>说明<textarea id="f-desc" rows="2"></textarea></label>
+      <label>适用条件<input id="f-cond" type="text"></label>
+      <label>单位<input id="f-unit" type="text"></label>
+      <label>学科<select id="f-subject"><option value="math">数学</option><option value="physics">物理</option></select></label>
+      <label>年级<select id="f-grade"><option value="g1">高一</option><option value="g2">高二</option><option value="g3">高三</option></select></label>
+      <label>模块<input id="f-module" type="text" placeholder="如：函数、力学"></label>
+      <label>标签（逗号分隔）<input id="f-tags" type="text" placeholder="易错,重点"></label>
+      <div class="modal-actions">
+        <button id="btn-save-formula" class="btn">保存</button>
+        <button id="btn-cancel-formula" class="btn btn-ghost">取消</button>
+      </div>
+    </div>
+  </div>
+  <div id="batch-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2>批量导入</h2>
+      <p class="hint">粘贴 JSON 数组，字段：title, latex, variants[], usage, desc, cond, unit, subject, grade, module, tags[]</p>
+      <textarea id="batch-text" rows="10" placeholder='[{"title":"勾股定理","latex":"a^2+b^2=c^2"}]'></textarea>
+      <div class="modal-actions">
+        <button id="btn-batch-import" class="btn">导入</button>
+        <button id="btn-batch-cancel" class="btn btn-ghost">取消</button>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+</div>
+
+<script>
+/* ================= 背景库（80套） ================= */
+const BACKGROUNDS = (() => {
+  const list = []; let id = 0;
+  const push = (cat, name, cssLight, cssDark) => list.push({ id: 'bg-' + (++id), cat, name, cssLight, cssDark });
+  const stars = [
+    ['深空星点','radial-gradient(circle at 20% 30%, #fff 1px, transparent 1px) 0 0/40px 40px, linear-gradient(160deg,#0b1026,#1a1a2e)','radial-gradient(circle at 20% 30%, #fff 1px, transparent 1px) 0 0/40px 40px, linear-gradient(160deg,#05060d,#121226)'],
+    ['银河','linear-gradient(135deg,#1b1b3a 0%,#3a2a5e 40%,#0e1a2e 100%)','linear-gradient(135deg,#0a0a18 0%,#1e1533 40%,#060d18 100%)'],
+    ['星轨旋涡','conic-gradient(from 0deg at 50% 50%, #1a1a2e, #2e2e5e, #1a1a2e, #3a3a6e, #1a1a2e)','conic-gradient(from 0deg at 50% 50%, #0b0b1a, #1c1c3a, #0b0b1a, #252550, #0b0b1a)'],
+    ['夜空渐变','linear-gradient(180deg,#0f2027,#203a43,#2c5364)','linear-gradient(180deg,#070f12,#101d22,#162a33)'],
+    ['流星','radial-gradient(ellipse at 70% 20%, rgba(255,255,255,.9), transparent 30%), linear-gradient(160deg,#0b1026,#1a1a2e)','radial-gradient(ellipse at 70% 20%, rgba(255,255,255,.7), transparent 30%), linear-gradient(160deg,#05060d,#121226)'],
+    ['繁星点点','radial-gradient(1px 1px at 10% 10%,#fff,transparent), radial-gradient(1px 1px at 30% 60%,#fff,transparent), radial-gradient(1px 1px at 80% 30%,#fff,transparent), linear-gradient(180deg,#141e30,#243b55)','radial-gradient(1px 1px at 10% 10%,#fff,transparent), radial-gradient(1px 1px at 30% 60%,#fff,transparent), radial-gradient(1px 1px at 80% 30%,#fff,transparent), linear-gradient(180deg,#0a0f18,#121f2b)'],
+    ['极光','linear-gradient(160deg,#0f2027,#2c5364,#7f5af0 80%)','linear-gradient(160deg,#070f12,#162a33,#4a32a0 80%)'],
+    ['深蓝星海','linear-gradient(180deg,#000428,#004e92)','linear-gradient(180deg,#00020f,#00295a)'],
+    ['紫夜','linear-gradient(135deg,#2b1055,#7597de)','linear-gradient(135deg,#14082a,#3a4f8a)'],
+    ['星云','radial-gradient(ellipse at 30% 30%, rgba(127,90,240,.5), transparent 50%), radial-gradient(ellipse at 70% 70%, rgba(52,211,153,.4), transparent 50%), linear-gradient(160deg,#0b1026,#1a1a2e)','radial-gradient(ellipse at 30% 30%, rgba(127,90,240,.4), transparent 50%), radial-gradient(ellipse at 70% 70%, rgba(52,211,153,.3), transparent 50%), linear-gradient(160deg,#05060d,#121226)']
+  ];
+  stars.forEach(([n,l,d]) => push('星空', n, l, d));
+  const nature = [
+    ['嫩芽','linear-gradient(160deg,#d4fc79,#96e6a1)','linear-gradient(160deg,#1e2a1a,#2f4a32)'],
+    ['花瓣','linear-gradient(135deg,#ffdde1,#ee9ca7)','linear-gradient(135deg,#2a1a1e,#4a2a32)'],
+    ['森林雾','linear-gradient(160deg,#cfd9df,#e2ebf0)','linear-gradient(160deg,#1a2326,#28343a)'],
+    ['春日草地','linear-gradient(180deg,#a8e063,#56ab2f)','linear-gradient(180deg,#1a2a12,#2a4a1a)'],
+    ['樱花','linear-gradient(135deg,#fbc2eb,#a6c1ee)','linear-gradient(135deg,#2a1a2e,#1a2438)'],
+    ['海风','linear-gradient(180deg,#89f7fe,#66a6ff)','linear-gradient(180deg,#0d2a33,#1a2f5a)'],
+    ['暖阳','linear-gradient(160deg,#f6d365,#fda085)','linear-gradient(160deg,#3a2a1a,#4a2a1a)'],
+    ['竹林','linear-gradient(160deg,#c2e59c,#64b3f4)','linear-gradient(160deg,#1a2a1a,#1a2a3a)'],
+    ['薰衣草','linear-gradient(135deg,#e0c3fc,#8ec5fc)','linear-gradient(135deg,#221a3a,#1a2a3a)'],
+    ['晨露','linear-gradient(160deg,#e8f5e9,#b2dfdb)','linear-gradient(160deg,#1a2320,#1a2a2a)']
+  ];
+  nature.forEach(([n,l,d]) => push('花草自然', n, l, d));
+  const grads = [
+    ['晨曦','linear-gradient(135deg,#ff9a9e,#fad0c4)','linear-gradient(135deg,#3a1a1e,#3a2a1e)'],
+    ['橘霞','linear-gradient(135deg,#f6d365,#fda085)','linear-gradient(135deg,#3a2a1a,#3a1a0a)'],
+    ['薄荷','linear-gradient(135deg,#d4fc79,#96e6a1)','linear-gradient(135deg,#1e2a1a,#1a2a1e)'],
+    ['湖水','linear-gradient(135deg,#89f7fe,#66a6ff)','linear-gradient(135deg,#0d2a33,#1a2f5a)'],
+    ['薰衣','linear-gradient(135deg,#e0c3fc,#8ec5fc)','linear-gradient(135deg,#221a3a,#1a2a3a)'],
+    ['桃粉','linear-gradient(135deg,#fbc2eb,#a6c1ee)','linear-gradient(135deg,#2a1a2e,#1a2438)'],
+    ['青柠','linear-gradient(135deg,#a1c4fd,#c2e9fb)','linear-gradient(135deg,#1a2438,#1a2a3a)'],
+    ['暖沙','linear-gradient(135deg,#f5f7fa,#c3cfe2)','linear-gradient(135deg,#1e2024,#2a3038)'],
+    ['蜜桃','linear-gradient(135deg,#ffecd2,#fcb69f)','linear-gradient(135deg,#3a2a1e,#3a201a)'],
+    ['深海','linear-gradient(135deg,#2b5876,#4e4376)','linear-gradient(135deg,#0d1a26,#1a1430)'],
+    ['薄荷蓝','linear-gradient(135deg,#a8edea,#fed6e3)','linear-gradient(135deg,#1a2a2a,#2a1e24)'],
+    ['落日','linear-gradient(135deg,#ff7e5f,#feb47b)','linear-gradient(135deg,#3a1a12,#3a2a12)'],
+    ['紫罗兰','linear-gradient(135deg,#7f00ff,#e100ff)','linear-gradient(135deg,#1a0a2a,#2a0a2a)'],
+    ['苹果绿','linear-gradient(135deg,#d4fc79,#a1e4b8)','linear-gradient(135deg,#1e2a1a,#1a2a1e)'],
+    ['云母','linear-gradient(135deg,#f5f7fa,#b8c6db)','linear-gradient(135deg,#1e2024,#2a303a)']
+  ];
+  grads.forEach(([n,l,d]) => push('渐变', n, l, d));
+  const solids = [
+    ['墨黑','#1a1a2e','#0e0e1a'],['米白','#faf7f0','#1e1e1e'],['暖灰','#e8e6e1','#202020'],
+    ['雾蓝','#dce3ea','#1a2028'],['豆沙','#e8d8d0','#241e1a'],['奶油','#fdf6e3','#1e1c18'],
+    ['黛绿','#d5e0d0','#182018'],['烟粉','#f0dfe0','#241a1a'],['浅沙','#efe8dc','#1e1c18'],['冰蓝','#e0eef2','#141e22']
+  ];
+  solids.forEach(([n,l,d]) => push('纯色', n, l, d));
+  for (let i=1;i<=10;i++){ const hue=(i*36)%360; push('纸张纹理','纸纹'+i,`repeating-linear-gradient(0deg, rgba(0,0,0,.02) 0 2px, transparent 2px 4px), hsl(${hue},25%,92%)`,`repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0 2px, transparent 2px 4px), hsl(${hue},20%,14%)`); }
+  const geoShapes = ['linear-gradient(135deg,#e0eafc,#cfdef3)','linear-gradient(45deg,#f5f7fa,#c3cfe2)','linear-gradient(160deg,#e6e9f0,#eef1f5)','linear-gradient(135deg,#fdfbfb,#ebedee)','linear-gradient(160deg,#f0f4f8,#d9e2ec)','linear-gradient(135deg,#e8ecf1,#b8c6db)','linear-gradient(45deg,#f5f7fa,#b8c6db)','linear-gradient(160deg,#eef2f7,#c3cfe2)','linear-gradient(135deg,#f9fbfd,#cfd9df)','linear-gradient(160deg,#e6e9f0,#eef1f5)'];
+  geoShapes.forEach((l,i)=>{ const d=l.replace(/#([0-9a-f]{6})/gi,(m,h)=>{const n=parseInt(h,16);const r=Math.max(10,Math.floor(((n>>16)&255)*0.15));const g=Math.max(10,Math.floor(((n>>8)&255)*0.15));const b=Math.max(10,Math.floor((n&255)*0.15));return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');}); push('极简几何','几何'+(i+1),l,d); });
+  const water = [
+    ['水彩蓝','radial-gradient(circle at 30% 30%, #a1c4fd, transparent 60%), radial-gradient(circle at 70% 60%, #c2e9fb, transparent 60%), #f5f7fa','radial-gradient(circle at 30% 30%, #1a2a3a, transparent 60%), radial-gradient(circle at 70% 60%, #1a2a3a, transparent 60%), #0a0f18'],
+    ['水彩粉','radial-gradient(circle at 30% 30%, #fbc2eb, transparent 60%), radial-gradient(circle at 70% 60%, #a6c1ee, transparent 60%), #fdf6f8','radial-gradient(circle at 30% 30%, #2a1a2e, transparent 60%), radial-gradient(circle at 70% 60%, #1a2438, transparent 60%), #0a0a12'],
+    ['水彩绿','radial-gradient(circle at 30% 30%, #a8edea, transparent 60%), radial-gradient(circle at 70% 60%, #fed6e3, transparent 60%), #f5faf8','radial-gradient(circle at 30% 30%, #1a2a2a, transparent 60%), radial-gradient(circle at 70% 60%, #2a1e24, transparent 60%), #0a1010'],
+    ['水彩橙','radial-gradient(circle at 30% 30%, #ffecd2, transparent 60%), radial-gradient(circle at 70% 60%, #fcb69f, transparent 60%), #fdf8f5','radial-gradient(circle at 30% 30%, #3a2a1e, transparent 60%), radial-gradient(circle at 70% 60%, #3a201a, transparent 60%), #120e0a'],
+    ['水彩紫','radial-gradient(circle at 30% 30%, #e0c3fc, transparent 60%), radial-gradient(circle at 70% 60%, #8ec5fc, transparent 60%), #f8f5fd','radial-gradient(circle at 30% 30%, #221a3a, transparent 60%), radial-gradient(circle at 70% 60%, #1a2a3a, transparent 60%), #0a0812'],
+    ['水彩灰','radial-gradient(circle at 30% 30%, #e6e9f0, transparent 60%), radial-gradient(circle at 70% 60%, #f5f7fa, transparent 60%), #fbfcfd','radial-gradient(circle at 30% 30%, #1a1c20, transparent 60%), radial-gradient(circle at 70% 60%, #202226, transparent 60%), #0a0b0d'],
+    ['水彩青','radial-gradient(circle at 30% 30%, #89f7fe, transparent 60%), radial-gradient(circle at 70% 60%, #66a6ff, transparent 60%), #f5fafd','radial-gradient(circle at 30% 30%, #0d2a33, transparent 60%), radial-gradient(circle at 70% 60%, #1a2f5a, transparent 60%), #05080d'],
+    ['水彩黄','radial-gradient(circle at 30% 30%, #f6d365, transparent 60%), radial-gradient(circle at 70% 60%, #fda085, transparent 60%), #fdfaf5','radial-gradient(circle at 30% 30%, #3a2a1a, transparent 60%), radial-gradient(circle at 70% 60%, #3a1a0a, transparent 60%), #120e0a'],
+    ['水彩棕','radial-gradient(circle at 30% 30%, #e8d8d0, transparent 60%), radial-gradient(circle at 70% 60%, #d5e0d0, transparent 60%), #faf7f5','radial-gradient(circle at 30% 30%, #241e1a, transparent 60%), radial-gradient(circle at 70% 60%, #182018, transparent 60%), #0e0c0a'],
+    ['水彩夜','radial-gradient(circle at 30% 30%, #2b5876, transparent 60%), radial-gradient(circle at 70% 60%, #4e4376, transparent 60%), #f0f2f8','radial-gradient(circle at 30% 30%, #0d1a26, transparent 60%), radial-gradient(circle at 70% 60%, #1a1430, transparent 60%), #05080d']
+  ];
+  water.forEach(([n,l,d]) => push('水彩', n, l, d));
+  const cloud = [
+    ['云海','linear-gradient(180deg,#e0eafc,#cfdef3)','linear-gradient(180deg,#141e2a,#1a2433)'],
+    ['云朵','linear-gradient(180deg,#f5f7fa,#e6e9f0)','linear-gradient(180deg,#1a1c20,#202226)'],
+    ['云霞','linear-gradient(180deg,#fbc2eb,#f5f7fa)','linear-gradient(180deg,#2a1a2e,#1a1c20)'],
+    ['云破','linear-gradient(180deg,#89f7fe,#e0eafc)','linear-gradient(180deg,#0d2a33,#141e2a)'],
+    ['云暖','linear-gradient(180deg,#f6d365,#f5f7fa)','linear-gradient(180deg,#3a2a1a,#1a1c20)'],
+    ['云紫','linear-gradient(180deg,#e0c3fc,#f5f7fa)','linear-gradient(180deg,#221a3a,#1a1c20)'],
+    ['云绿','linear-gradient(180deg,#d4fc79,#e6e9f0)','linear-gradient(180deg,#1e2a1a,#1a1c20)'],
+    ['云蓝','linear-gradient(180deg,#a1c4fd,#f5f7fa)','linear-gradient(180deg,#1a2438,#1a1c20)'],
+    ['云墨','linear-gradient(180deg,#b8c6db,#e6e9f0)','linear-gradient(180deg,#1a1e24,#202226)'],
+    ['云白','linear-gradient(180deg,#fdfbfb,#ebedee)','linear-gradient(180deg,#141416,#1a1c20)']
+  ];
+  cloud.forEach(([n,l,d]) => push('云海', n, l, d));
+  const categories = [...new Set(list.map(b => b.cat))];
+  return { list, categories, byId: Object.fromEntries(list.map(b => [b.id, b])) };
+})();
+
+/* ================= 公式数据 ================= */
+const FORMULAS = [
+  { id:'m-g1-set-1', title:'集合元素个数（容斥）', latex:'|A\\cup B|=|A|+|B|-|A\\cap B|', variants:['|A\\cup B\\cup C|=|A|+|B|+|C|-|A\\cap B|-|A\\cap C|-|B\\cap C|+|A\\cap B\\cap C|'], usage:'求并集元素个数、计数问题', desc:'两个集合的并集元素个数等于各自元素个数之和减去交集元素个数', cond:'有限集合', unit:'个', subject:'math', grade:'g1', module:'集合与逻辑', tags:['基础'] },
+  { id:'m-g1-set-2', title:'子集个数', latex:'2^n', variants:['真子集个数：2^n-1','非空子集个数：2^n-1'], usage:'已知集合有 n 个元素，求子集总数', desc:'含 n 个元素的集合共有 2^n 个子集', cond:'n 为集合元素个数', unit:'个', subject:'math', grade:'g1', module:'集合与逻辑', tags:['计数'] },
+  { id:'m-g1-fn-1', title:'一次函数', latex:'y=kx+b', variants:['k=\\frac{y_2-y_1}{x_2-x_1}','b=y-kx'], usage:'线性关系建模、图像斜率', desc:'k 为斜率，b 为纵截距', cond:'k\\neq 0 时为一次函数', unit:'—', subject:'math', grade:'g1', module:'函数', tags:['基础'] },
+  { id:'m-g1-fn-2', title:'二次函数顶点式', latex:'y=a(x-h)^2+k', variants:['h=-\\frac{b}{2a}','k=\\frac{4ac-b^2}{4a}','一般式：y=ax^2+bx+c'], usage:'求最值、顶点坐标、对称轴', desc:'顶点 (h,k)，对称轴 x=h', cond:'a\\neq 0', unit:'—', subject:'math', grade:'g1', module:'函数', tags:['重点'] },
+  { id:'m-g1-fn-3', title:'二次方程求根公式', latex:'x=\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}', variants:['判别式：\\Delta=b^2-4ac','x_1+x_2=-\\frac{b}{a}','x_1x_2=\\frac{c}{a}'], usage:'解一元二次方程、判断根的情况', desc:'Δ>0 两不等实根，Δ=0 两相等实根，Δ<0 无实根', cond:'a\\neq 0', unit:'—', subject:'math', grade:'g1', module:'函数', tags:['重点','易错'] },
+  { id:'m-g1-fn-4', title:'指数运算法则', latex:'a^m\\cdot a^n=a^{m+n}', variants:['\\frac{a^m}{a^n}=a^{m-n}','(a^m)^n=a^{mn}','(ab)^n=a^nb^n','a^{-n}=\\frac{1}{a^n}'], usage:'指数化简与计算', desc:'同底数幂相乘底数不变指数相加', cond:'a>0', unit:'—', subject:'math', grade:'g1', module:'函数', tags:['基础'] },
+  { id:'m-g1-fn-5', title:'对数运算法则', latex:'\\log_a(MN)=\\log_aM+\\log_aN', variants:['\\log_a\\frac{M}{N}=\\log_aM-\\log_aN','\\log_aM^n=n\\log_aM','\\log_ab=\\frac{\\log_cb}{\\log_ca}'], usage:'对数化简、换底计算', desc:'对数乘积化加，商化减，幂化系数', cond:'a>0,a\\neq1,M,N>0', unit:'—', subject:'math', grade:'g1', module:'函数', tags:['重点'] },
+  { id:'m-g1-fn-6', title:'对数恒等式', latex:'a^{\\log_aN}=N', variants:['\\log_aa=1','\\log_a1=0'], usage:'指数对数互化', desc:'指数与对数互为逆运算', cond:'a>0,a\\neq1,N>0', unit:'—', subject:'math', grade:'g1', module:'函数', tags:['基础'] },
+  { id:'m-g1-tri-1', title:'同角三角函数关系', latex:'\\sin^2\\alpha+\\cos^2\\alpha=1', variants:['\\tan\\alpha=\\frac{\\sin\\alpha}{\\cos\\alpha}','1+\\tan^2\\alpha=\\frac{1}{\\cos^2\\alpha}'], usage:'已知一个三角函数值求其余', desc:'平方关系与商数关系', cond:'\\cos\\alpha\\neq0（商数关系）', unit:'—', subject:'math', grade:'g1', module:'三角函数', tags:['基础'] },
+  { id:'m-g1-tri-2', title:'两角和差公式', latex:'\\sin(\\alpha\\pm\\beta)=\\sin\\alpha\\cos\\beta\\pm\\cos\\alpha\\sin\\beta', variants:['\\cos(\\alpha\\pm\\beta)=\\cos\\alpha\\cos\\beta\\mp\\sin\\alpha\\sin\\beta','\\tan(\\alpha\\pm\\beta)=\\frac{\\tan\\alpha\\pm\\tan\\beta}{1\\mp\\tan\\alpha\\tan\\beta}'], usage:'求非特殊角三角函数值、化简', desc:'和差角展开公式', cond:'正切公式分母不为 0', unit:'—', subject:'math', grade:'g1', module:'三角函数', tags:['重点'] },
+  { id:'m-g1-tri-3', title:'二倍角公式', latex:'\\sin2\\alpha=2\\sin\\alpha\\cos\\alpha', variants:['\\cos2\\alpha=\\cos^2\\alpha-\\sin^2\\alpha=2\\cos^2\\alpha-1=1-2\\sin^2\\alpha','\\tan2\\alpha=\\frac{2\\tan\\alpha}{1-\\tan^2\\alpha}'], usage:'降幂、化简、求值', desc:'由和角公式令 β=α 得到', cond:'正切公式分母不为 0', unit:'—', subject:'math', grade:'g1', module:'三角函数', tags:['重点'] },
+  { id:'m-g1-tri-4', title:'正弦定理', latex:'\\frac{a}{\\sin A}=\\frac{b}{\\sin B}=\\frac{c}{\\sin C}=2R', variants:['a=2R\\sin A','\\sin A=\\frac{a}{2R}'], usage:'解三角形、边角互化', desc:'R 为外接圆半径', cond:'任意三角形', unit:'—', subject:'math', grade:'g1', module:'三角函数', tags:['重点'] },
+  { id:'m-g1-tri-5', title:'余弦定理', latex:'c^2=a^2+b^2-2ab\\cos C', variants:['\\cos C=\\frac{a^2+b^2-c^2}{2ab}','a^2=b^2+c^2-2bc\\cos A'], usage:'已知两边及夹角求第三边、已知三边求角', desc:'勾股定理的推广', cond:'任意三角形', unit:'—', subject:'math', grade:'g1', module:'三角函数', tags:['重点'] },
+  { id:'m-g1-vec-1', title:'向量数量积', latex:'\\vec a\\cdot\\vec b=|\\vec a||\\vec b|\\cos\\theta', variants:['\\vec a\\cdot\\vec b=x_1x_2+y_1y_2','\\cos\\theta=\\frac{\\vec a\\cdot\\vec b}{|\\vec a||\\vec b|}'], usage:'求夹角、判断垂直', desc:'θ 为两向量夹角', cond:'—', unit:'—', subject:'math', grade:'g1', module:'平面向量', tags:['重点'] },
+  { id:'m-g1-vec-2', title:'向量垂直与平行', latex:'\\vec a\\perp\\vec b\\Leftrightarrow\\vec a\\cdot\\vec b=0', variants:['\\vec a\\parallel\\vec b\\Leftrightarrow x_1y_2-x_2y_1=0','\\vec a\\parallel\\vec b\\Leftrightarrow\\vec a=\\lambda\\vec b'], usage:'判断向量位置关系', desc:'垂直数量积为 0，平行坐标交叉积相等', cond:'\\vec b\\neq\\vec 0（平行）', unit:'—', subject:'math', grade:'g1', module:'平面向量', tags:['易错'] },
+  { id:'m-g1-vec-3', title:'向量模长', latex:'|\\vec a|=\\sqrt{x^2+y^2}', variants:['|\\vec a|^2=\\vec a\\cdot\\vec a','|\\vec a\\pm\\vec b|^2=|\\vec a|^2\\pm2\\vec a\\cdot\\vec b+|\\vec b|^2'], usage:'求向量长度、距离', desc:'坐标形式下模长公式', cond:'—', unit:'—', subject:'math', grade:'g1', module:'平面向量', tags:['基础'] },
+  { id:'m-g2-seq-1', title:'等差数列通项', latex:'a_n=a_1+(n-1)d', variants:['d=\\frac{a_n-a_1}{n-1}','a_n=a_m+(n-m)d'], usage:'求等差数列任一项', desc:'d 为公差', cond:'d 为常数', unit:'—', subject:'math', grade:'g2', module:'数列', tags:['基础'] },
+  { id:'m-g2-seq-2', title:'等差数列求和', latex:'S_n=\\frac{n(a_1+a_n)}{2}', variants:['S_n=na_1+\\frac{n(n-1)}{2}d','S_n=\\frac{n}{2}[2a_1+(n-1)d]'], usage:'求等差数列前 n 项和', desc:'首末项平均乘以项数', cond:'—', unit:'—', subject:'math', grade:'g2', module:'数列', tags:['重点'] },
+  { id:'m-g2-seq-3', title:'等比数列通项', latex:'a_n=a_1q^{n-1}', variants:['q=\\frac{a_{n+1}}{a_n}','a_n=a_mq^{n-m}'], usage:'求等比数列任一项', desc:'q 为公比', cond:'q\\neq0', unit:'—', subject:'math', grade:'g2', module:'数列', tags:['基础'] },
+  { id:'m-g2-seq-4', title:'等比数列求和', latex:'S_n=\\frac{a_1(1-q^n)}{1-q}', variants:['q=1 时 S_n=na_1','S_n=\\frac{a_1-a_nq}{1-q}'], usage:'求等比数列前 n 项和', desc:'注意 q=1 需单独讨论', cond:'q\\neq1', unit:'—', subject:'math', grade:'g2', module:'数列', tags:['易错'] },
+  { id:'m-g2-seq-5', title:'裂项相消', latex:'\\frac{1}{n(n+1)}=\\frac{1}{n}-\\frac{1}{n+1}', variants:['\\frac{1}{n(n+k)}=\\frac{1}{k}(\\frac{1}{n}-\\frac{1}{n+k})'], usage:'求分式型数列前 n 项和', desc:'将通项拆成两项之差，求和时中间项相消', cond:'分母为连续或等差因子', unit:'—', subject:'math', grade:'g2', module:'数列', tags:['技巧'] },
+  { id:'m-g2-ineq-1', title:'基本不等式', latex:'a+b\\geq2\\sqrt{ab}', variants:['ab\\leq(\\frac{a+b}{2})^2','\\frac{2}{\\frac{1}{a}+\\frac{1}{b}}\\leq\\sqrt{ab}\\leq\\frac{a+b}{2}\\leq\\sqrt{\\frac{a^2+b^2}{2}}'], usage:'求最值、证明不等式', desc:'当且仅当 a=b 时取等号', cond:'a,b>0', unit:'—', subject:'math', grade:'g2', module:'不等式', tags:['重点','易错'] },
+  { id:'m-g2-ineq-2', title:'绝对值不等式', latex:'||a|-|b||\\leq|a+b|\\leq|a|+|b|', variants:['|a-b|\\leq|a|+|b|','|x|<a\\Leftrightarrow-a<x<a','|x|>a\\Leftrightarrow x>a 或 x<-a'], usage:'解绝对值不等式、放缩', desc:'三角不等式', cond:'a>0（解不等式时）', unit:'—', subject:'math', grade:'g2', module:'不等式', tags:['易错'] },
+  { id:'m-g2-geo-1', title:'两点间距离', latex:'d=\\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}', variants:['中点坐标：(\\frac{x_1+x_2}{2},\\frac{y_1+y_2}{2})'], usage:'求距离、中点', desc:'平面直角坐标系两点距离', cond:'—', unit:'—', subject:'math', grade:'g2', module:'解析几何', tags:['基础'] },
+  { id:'m-g2-geo-2', title:'直线斜率', latex:'k=\\frac{y_2-y_1}{x_2-x_1}', variants:['k=\\tan\\alpha','点斜式：y-y_0=k(x-x_0)','斜截式：y=kx+b'], usage:'求直线方程、判断平行垂直', desc:'α 为倾斜角', cond:'x_1\\neq x_2', unit:'—', subject:'math', grade:'g2', module:'解析几何', tags:['基础'] },
+  { id:'m-g2-geo-3', title:'点到直线距离', latex:'d=\\frac{|Ax_0+By_0+C|}{\\sqrt{A^2+B^2}}', variants:['两平行线距离：d=\\frac{|C_1-C_2|}{\\sqrt{A^2+B^2}}'], usage:'求距离', desc:'直线 Ax+By+C=0 到点 (x0,y0)', cond:'A,B 不同时为 0', unit:'—', subject:'math', grade:'g2', module:'解析几何', tags:['重点'] },
+  { id:'m-g2-geo-4', title:'圆的标准方程', latex:'(x-a)^2+(y-b)^2=r^2', variants:['一般式：x^2+y^2+Dx+Ey+F=0','圆心 (-\\frac{D}{2},-\\frac{E}{2})，半径 \\frac{\\sqrt{D^2+E^2-4F}}{2}'], usage:'求圆方程、圆心半径', desc:'圆心 (a,b)，半径 r', cond:'r>0', unit:'—', subject:'math', grade:'g2', module:'解析几何', tags:['基础'] },
+  { id:'m-g2-geo-5', title:'椭圆标准方程', latex:'\\frac{x^2}{a^2}+\\frac{y^2}{b^2}=1', variants:['c^2=a^2-b^2','离心率 e=\\frac{c}{a}','焦点 (±c,0)'], usage:'研究椭圆性质', desc:'a>b>0，焦点在 x 轴', cond:'a>b>0', unit:'—', subject:'math', grade:'g2', module:'解析几何', tags:['重点'] },
+  { id:'m-g2-geo-6', title:'双曲线标准方程', latex:'\\frac{x^2}{a^2}-\\frac{y^2}{b^2}=1', variants:['c^2=a^2+b^2','渐近线 y=\\pm\\frac{b}{a}x','e=\\frac{c}{a}'], usage:'研究双曲线性质', desc:'焦点在 x 轴', cond:'a,b>0', unit:'—', subject:'math', grade:'g2', module:'解析几何', tags:['重点'] },
+  { id:'m-g2-geo-7', title:'抛物线标准方程', latex:'y^2=2px', variants:['焦点 (\\frac{p}{2},0)','准线 x=-\\frac{p}{2}','y^2=-2px 开口向左'], usage:'研究抛物线性质', desc:'p>0 开口向右', cond:'p>0', unit:'—', subject:'math', grade:'g2', module:'解析几何', tags:['重点'] },
+  { id:'m-g3-der-1', title:'导数定义', latex:"f'(x_0)=\\lim_{\\Delta x\\to0}\\frac{f(x_0+\\Delta x)-f(x_0)}{\\Delta x}", variants:["几何意义：切线斜率 k=f'(x_0)"], usage:'求导数、切线斜率', desc:'函数在 x0 处的瞬时变化率', cond:'极限存在', unit:'—', subject:'math', grade:'g3', module:'导数', tags:['基础'] },
+  { id:'m-g3-der-2', title:'基本求导公式', latex:"(x^n)'=nx^{n-1}", variants:["(\\sin x)'=\\cos x","(\\cos x)'=-\\sin x","(e^x)'=e^x","(\\ln x)'=\\frac{1}{x}","(a^x)'=a^x\\ln a","(\\log_ax)'=\\frac{1}{x\\ln a}"], usage:'求导运算', desc:'常见函数导数', cond:'\\ln x 中 x>0', unit:'—', subject:'math', grade:'g3', module:'导数', tags:['重点'] },
+  { id:'m-g3-der-3', title:'导数四则运算', latex:"(uv)'=u'v+uv'", variants:["(u\\pm v)'=u'\\pm v'","(\\frac{u}{v})'=\\frac{u'v-uv'}{v^2}"], usage:'复合函数求导前的拆分', desc:'乘积法则与商法则', cond:'v\\neq0（商法则）', unit:'—', subject:'math', grade:'g3', module:'导数', tags:['重点'] },
+  { id:'m-g3-der-4', title:'复合函数求导', latex:"y'=f'(u)\\cdot u'(x)", variants:['链式法则：由外向内逐层求导'], usage:'求复合函数导数', desc:'u 为中间变量', cond:'各层可导', unit:'—', subject:'math', grade:'g3', module:'导数', tags:['重点','易错'] },
+  { id:'m-g3-der-5', title:'极值判定', latex:"f'(x)=0 且左右异号", variants:["f''(x)>0 极小值","f''(x)<0 极大值"], usage:'求函数极值、最值', desc:'导数为零且两侧符号改变处为极值点', cond:'函数可导', unit:'—', subject:'math', grade:'g3', module:'导数', tags:['重点'] },
+  { id:'m-g3-prob-1', title:'古典概型', latex:'P(A)=\\frac{m}{n}', variants:['P(\\bar A)=1-P(A)','P(A\\cup B)=P(A)+P(B)-P(A\\cap B)'], usage:'求等可能事件概率', desc:'m 为有利结果数，n 为总结果数', cond:'各结果等可能', unit:'—', subject:'math', grade:'g3', module:'概率统计', tags:['基础'] },
+  { id:'m-g3-prob-2', title:'条件概率', latex:'P(B|A)=\\frac{P(A\\cap B)}{P(A)}', variants:['P(A\\cap B)=P(A)P(B|A)','A,B 独立时 P(A\\cap B)=P(A)P(B)'], usage:'求条件概率、独立事件', desc:'在 A 发生条件下 B 发生的概率', cond:'P(A)>0', unit:'—', subject:'math', grade:'g3', module:'概率统计', tags:['重点'] },
+  { id:'m-g3-prob-3', title:'全概率公式', latex:'P(B)=\\sum_{i=1}^{n}P(A_i)P(B|A_i)', variants:['贝叶斯公式：P(A_i|B)=\\frac{P(A_i)P(B|A_i)}{P(B)}'], usage:'复杂事件概率分解', desc:'A_i 为完备事件组', cond:'A_i 互斥且并为全集', unit:'—', subject:'math', grade:'g3', module:'概率统计', tags:['重点'] },
+  { id:'m-g3-prob-4', title:'二项分布', latex:'P(X=k)=C_n^kp^k(1-p)^{n-k}', variants:['E(X)=np','D(X)=np(1-p)'], usage:'n 次独立重复试验成功次数', desc:'X~B(n,p)', cond:'每次试验独立、概率相同', unit:'—', subject:'math', grade:'g3', module:'概率统计', tags:['重点'] },
+  { id:'m-g3-prob-5', title:'正态分布', latex:'X\\sim N(\\mu,\\sigma^2)', variants:['密度函数：f(x)=\\frac{1}{\\sqrt{2\\pi}\\sigma}e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}','P(\\mu-\\sigma<X<\\mu+\\sigma)\\approx0.6827'], usage:'正态分布概率计算', desc:'μ 为均值，σ 为标准差', cond:'σ>0', unit:'—', subject:'math', grade:'g3', module:'概率统计', tags:['重点'] },
+  { id:'m-g3-prob-6', title:'期望与方差', latex:'E(X)=\\sum x_ip_i', variants:['D(X)=E(X^2)-[E(X)]^2','E(aX+b)=aE(X)+b','D(aX+b)=a^2D(X)'], usage:'求随机变量数字特征', desc:'期望为加权平均，方差衡量离散程度', cond:'—', unit:'—', subject:'math', grade:'g3', module:'概率统计', tags:['重点'] },
+  { id:'m-g3-sol-1', title:'柱体体积', latex:'V=Sh', variants:['圆柱：V=\\pi r^2h','棱柱：V=Sh'], usage:'求柱体体积', desc:'S 为底面积，h 为高', cond:'—', unit:'—', subject:'math', grade:'g3', module:'立体几何', tags:['基础'] },
+  { id:'m-g3-sol-2', title:'锥体体积', latex:'V=\\frac{1}{3}Sh', variants:['圆锥：V=\\frac{1}{3}\\pi r^2h'], usage:'求锥体体积', desc:'S 为底面积，h 为高', cond:'—', unit:'—', subject:'math', grade:'g3', module:'立体几何', tags:['基础'] },
+  { id:'m-g3-sol-3', title:'球体体积与表面积', latex:'V=\\frac{4}{3}\\pi R^3', variants:['S=4\\pi R^2'], usage:'求球体体积、表面积', desc:'R 为球半径', cond:'—', unit:'—', subject:'math', grade:'g3', module:'立体几何', tags:['基础'] },
+  { id:'m-g3-sol-4', title:'空间向量夹角', latex:'\\cos\\theta=\\frac{|\\vec a\\cdot\\vec b|}{|\\vec a||\\vec b|}', variants:['线面角正弦：\\sin\\theta=\\frac{|\\vec n\\cdot\\vec l|}{|\\vec n||\\vec l|}','二面角余弦：\\cos\\theta=\\frac{\\vec n_1\\cdot\\vec n_2}{|\\vec n_1||\\vec n_2|}'], usage:'求空间角', desc:'用向量法求线线、线面、面面角', cond:'向量非零', unit:'—', subject:'math', grade:'g3', module:'立体几何', tags:['重点'] },
+  { id:'m-g3-cplx-1', title:'复数代数形式', latex:'z=a+bi', variants:['|z|=\\sqrt{a^2+b^2}','\\bar z=a-bi','z\\bar z=a^2+b^2'], usage:'复数运算、模长', desc:'a 实部，b 虚部，i^2=-1', cond:'—', unit:'—', subject:'math', grade:'g3', module:'复数', tags:['基础'] },
+  { id:'m-g3-cplx-2', title:'复数除法', latex:'\\frac{a+bi}{c+di}=\\frac{(a+bi)(c-di)}{c^2+d^2}', variants:['分母实数化：乘以共轭复数'], usage:'复数化简', desc:'分子分母同乘分母共轭', cond:'c+di\\neq0', unit:'—', subject:'math', grade:'g3', module:'复数', tags:['易错'] },
+  { id:'p-g1-kin-1', title:'速度公式', latex:'v=\\frac{\\Delta x}{\\Delta t}', variants:['平均速度：\\bar v=\\frac{x}{t}','瞬时速度：v=\\lim_{\\Delta t\\to0}\\frac{\\Delta x}{\\Delta t}'], usage:'描述运动快慢', desc:'位移与时间比值', cond:'—', unit:'m/s', subject:'physics', grade:'g1', module:'运动学', tags:['基础'] },
+  { id:'p-g1-kin-2', title:'加速度', latex:'a=\\frac{\\Delta v}{\\Delta t}', variants:['a=\\frac{v-v_0}{t}','v=v_0+at'], usage:'描述速度变化快慢', desc:'速度变化量与时间比值', cond:'—', unit:'m/s²', subject:'physics', grade:'g1', module:'运动学', tags:['基础'] },
+  { id:'p-g1-kin-3', title:'匀变速直线运动速度', latex:'v=v_0+at', variants:['v_0=v-at','t=\\frac{v-v_0}{a}'], usage:'求末速度或初速度', desc:'匀变速直线运动基本公式', cond:'a 恒定', unit:'m/s', subject:'physics', grade:'g1', module:'运动学', tags:['重点'] },
+  { id:'p-g1-kin-4', title:'匀变速直线运动位移', latex:'x=v_0t+\\frac{1}{2}at^2', variants:['x=\\frac{v_0+v}{2}t','x=vt-\\frac{1}{2}at^2'], usage:'求位移', desc:'匀变速直线运动位移公式', cond:'a 恒定', unit:'m', subject:'physics', grade:'g1', module:'运动学', tags:['重点'] },
+  { id:'p-g1-kin-5', title:'速度位移关系', latex:'v^2-v_0^2=2ax', variants:['v=\\sqrt{v_0^2+2ax}','x=\\frac{v^2-v_0^2}{2a}'], usage:'不涉及时间时求速度或位移', desc:'消去 t 得到', cond:'a 恒定', unit:'—', subject:'physics', grade:'g1', module:'运动学', tags:['重点'] },
+  { id:'p-g1-kin-6', title:'自由落体', latex:'h=\\frac{1}{2}gt^2', variants:['v=gt','v^2=2gh'], usage:'自由落体运动计算', desc:'初速度为 0 的匀加速直线运动', cond:'只受重力、初速度为 0', unit:'m', subject:'physics', grade:'g1', module:'运动学', tags:['基础'] },
+  { id:'p-g1-mech-1', title:'牛顿第二定律', latex:'F=ma', variants:['a=\\frac{F}{m}','F 为合外力'], usage:'求加速度或合外力', desc:'合外力与加速度成正比', cond:'惯性参考系、质量不变', unit:'N', subject:'physics', grade:'g1', module:'力学', tags:['重点'] },
+  { id:'p-g1-mech-2', title:'重力', latex:'G=mg', variants:['g\\approx9.8\\,\\text{m/s}^2','g\\approx10\\,\\text{m/s}^2（估算）'], usage:'计算重力', desc:'m 为质量，g 为重力加速度', cond:'—', unit:'N', subject:'physics', grade:'g1', module:'力学', tags:['基础'] },
+  { id:'p-g1-mech-3', title:'胡克定律', latex:'F=kx', variants:['k=\\frac{F}{x}'], usage:'求弹簧弹力或劲度系数', desc:'x 为形变量', cond:'弹性限度内', unit:'N', subject:'physics', grade:'g1', module:'力学', tags:['基础'] },
+  { id:'p-g1-mech-4', title:'滑动摩擦力', latex:'f=\\mu N', variants:['N 为正压力','静摩擦力：0<f\\leq f_{max}'], usage:'求摩擦力', desc:'μ 为动摩擦因数', cond:'滑动时', unit:'N', subject:'physics', grade:'g1', module:'力学', tags:['重点','易错'] },
+  { id:'p-g1-mech-5', title:'力的合成', latex:'F=\\sqrt{F_1^2+F_2^2+2F_1F_2\\cos\\theta}', variants:['|F_1-F_2|\\leq F\\leq F_1+F_2','垂直时 F=\\sqrt{F_1^2+F_2^2}'], usage:'求合力', desc:'θ 为两力夹角', cond:'—', unit:'N', subject:'physics', grade:'g1', module:'力学', tags:['重点'] },
+  { id:'p-g1-mech-6', title:'共点力平衡', latex:'\\sum\\vec F=0', variants:['\\sum F_x=0','\\sum F_y=0'], usage:'平衡问题求解', desc:'合力为零', cond:'静止或匀速直线运动', unit:'—', subject:'physics', grade:'g1', module:'力学', tags:['重点'] },
+  { id:'p-g2-cur-1', title:'平抛运动', latex:'x=v_0t,\\ y=\\frac{1}{2}gt^2', variants:['v_y=gt','合速度 v=\\sqrt{v_0^2+(gt)^2}','tan\\theta=\\frac{gt}{v_0}'], usage:'平抛运动轨迹与速度', desc:'水平匀速、竖直自由落体', cond:'初速度水平、只受重力', unit:'m', subject:'physics', grade:'g2', module:'曲线运动', tags:['重点'] },
+  { id:'p-g2-cur-2', title:'向心加速度', latex:'a_n=\\frac{v^2}{r}=\\omega^2r', variants:['a_n=\\frac{4\\pi^2r}{T^2}','a_n=v\\omega'], usage:'圆周运动加速度', desc:'指向圆心', cond:'匀速圆周运动', unit:'m/s²', subject:'physics', grade:'g2', module:'曲线运动', tags:['重点'] },
+  { id:'p-g2-cur-3', title:'向心力', latex:'F_n=m\\frac{v^2}{r}=m\\omega^2r', variants:['F_n=m\\frac{4\\pi^2r}{T^2}'], usage:'求向心力', desc:'由合外力提供', cond:'匀速圆周运动', unit:'N', subject:'physics', grade:'g2', module:'曲线运动', tags:['重点'] },
+  { id:'p-g2-cur-4', title:'线速度与角速度', latex:'v=\\omega r', variants:['\\omega=\\frac{2\\pi}{T}','v=\\frac{2\\pi r}{T}'], usage:'圆周运动参量换算', desc:'T 为周期', cond:'—', unit:'m/s', subject:'physics', grade:'g2', module:'曲线运动', tags:['基础'] },
+  { id:'p-g2-cur-5', title:'万有引力', latex:'F=G\\frac{m_1m_2}{r^2}', variants:['G=6.67\\times10^{-11}\\,\\text{N·m}^2/\\text{kg}^2','g=\\frac{GM}{R^2}'], usage:'天体运动、求重力加速度', desc:'G 为引力常量', cond:'质点或均匀球体', unit:'N', subject:'physics', grade:'g2', module:'曲线运动', tags:['重点'] },
+  { id:'p-g2-cur-6', title:'天体运动线速度', latex:'v=\\sqrt{\\frac{GM}{r}}', variants:['T=2\\pi\\sqrt{\\frac{r^3}{GM}}','\\omega=\\sqrt{\\frac{GM}{r^3}}'], usage:'卫星运动参量', desc:'万有引力提供向心力', cond:'圆轨道', unit:'m/s', subject:'physics', grade:'g2', module:'曲线运动', tags:['重点'] },
+  { id:'p-g2-en-1', title:'功', latex:'W=Fl\\cos\\theta', variants:['W=F\\cdot l（恒力）','W=Pt（功率恒定）'], usage:'求力做功', desc:'θ 为力与位移夹角', cond:'恒力', unit:'J', subject:'physics', grade:'g2', module:'功与能', tags:['重点'] },
+  { id:'p-g2-en-2', title:'功率', latex:'P=\\frac{W}{t}', variants:['P=Fv','瞬时功率 P=Fv\\cos\\theta'], usage:'求功率', desc:'平均功率或瞬时功率', cond:'—', unit:'W', subject:'physics', grade:'g2', module:'功与能', tags:['重点'] },
+  { id:'p-g2-en-3', title:'动能', latex:'E_k=\\frac{1}{2}mv^2', variants:['E_k=\\frac{p^2}{2m}','p=\\sqrt{2mE_k}'], usage:'求动能', desc:'p 为动量', cond:'—', unit:'J', subject:'physics', grade:'g2', module:'功与能', tags:['基础'] },
+  { id:'p-g2-en-4', title:'动能定理', latex:'W_{合}=\\Delta E_k', variants:['W_{合}=\\frac{1}{2}mv_2^2-\\frac{1}{2}mv_1^2'], usage:'不涉及时间时求速度或功', desc:'合外力做功等于动能变化', cond:'—', unit:'J', subject:'physics', grade:'g2', module:'功与能', tags:['重点'] },
+  { id:'p-g2-en-5', title:'重力势能', latex:'E_p=mgh', variants:['W_G=-\\Delta E_p','E_p 相对零势能面'], usage:'求重力势能', desc:'h 为相对零势能面高度', cond:'—', unit:'J', subject:'physics', grade:'g2', module:'功与能', tags:['基础'] },
+  { id:'p-g2-en-6', title:'机械能守恒', latex:'E_{k1}+E_{p1}=E_{k2}+E_{p2}', variants:['\\frac{1}{2}mv_1^2+mgh_1=\\frac{1}{2}mv_2^2+mgh_2'], usage:'只有重力或弹力做功时求速度、高度', desc:'机械能总量不变', cond:'只有重力/弹力做功', unit:'J', subject:'physics', grade:'g2', module:'功与能', tags:['重点','易错'] },
+  { id:'p-g2-en-7', title:'动量定理', latex:'Ft=mv_2-mv_1', variants:['I=\\Delta p','p=mv'], usage:'求冲量、动量变化', desc:'合外力冲量等于动量变化', cond:'—', unit:'N·s', subject:'physics', grade:'g2', module:'功与能', tags:['重点'] },
+  { id:'p-g2-en-8', title:'动量守恒', latex:"m_1v_1+m_2v_2=m_1v_1'+m_2v_2'", variants:['弹性碰撞：动能也守恒','完全非弹性碰撞：碰后共速'], usage:'碰撞、爆炸问题', desc:'系统总动量不变', cond:'合外力为零或内力远大于外力', unit:'kg·m/s', subject:'physics', grade:'g2', module:'功与能', tags:['重点'] },
+  { id:'p-g3-elec-1', title:'库仑定律', latex:'F=k\\frac{q_1q_2}{r^2}', variants:['k=9.0\\times10^9\\,\\text{N·m}^2/\\text{C}^2'], usage:'求点电荷间静电力', desc:'k 为静电力常量', cond:'真空、点电荷', unit:'N', subject:'physics', grade:'g3', module:'电场', tags:['重点'] },
+  { id:'p-g3-elec-2', title:'电场强度', latex:'E=\\frac{F}{q}', variants:['点电荷：E=k\\frac{Q}{r^2}','匀强电场：E=\\frac{U}{d}'], usage:'求电场强度', desc:'q 为试探电荷', cond:'—', unit:'N/C 或 V/m', subject:'physics', grade:'g3', module:'电场', tags:['重点'] },
+  { id:'p-g3-elec-3', title:'电势差', latex:'U_{AB}=\\varphi_A-\\varphi_B', variants:['U_{AB}=\\frac{W_{AB}}{q}','W_{AB}=qU_{AB}'], usage:'求电势差、电场力做功', desc:'电势差等于电场力做功与电荷量之比', cond:'—', unit:'V', subject:'physics', grade:'g3', module:'电场', tags:['重点'] },
+  { id:'p-g3-elec-4', title:'电容', latex:'C=\\frac{Q}{U}', variants:['平行板电容：C=\\frac{\\varepsilon S}{4\\pi kd}'], usage:'求电容、电荷量', desc:'S 为正对面积，d 为板间距', cond:'—', unit:'F', subject:'physics', grade:'g3', module:'电场', tags:['重点'] },
+  { id:'p-g3-elec-5', title:'电场力做功', latex:'W=qU', variants:['W=qEd（匀强电场）','W_{AB}=q(\\varphi_A-\\varphi_B)'], usage:'求电场力做功', desc:'与路径无关', cond:'—', unit:'J', subject:'physics', grade:'g3', module:'电场', tags:['重点'] },
+  { id:'p-g3-cir-1', title:'欧姆定律', latex:'I=\\frac{U}{R}', variants:['U=IR','R=\\frac{U}{I}'], usage:'求电流、电压、电阻', desc:'部分电路欧姆定律', cond:'线性电阻', unit:'A', subject:'physics', grade:'g3', module:'电路', tags:['基础'] },
+  { id:'p-g3-cir-2', title:'闭合电路欧姆定律', latex:'I=\\frac{E}{R+r}', variants:['E=U_{外}+U_{内}','U_{外}=E-Ir'], usage:'含电源电路计算', desc:'E 为电动势，r 为内阻', cond:'—', unit:'A', subject:'physics', grade:'g3', module:'电路', tags:['重点'] },
+  { id:'p-g3-cir-3', title:'电功与电功率', latex:'W=UIt', variants:['P=UI','纯电阻：P=I^2R=\\frac{U^2}{R}'], usage:'求电功、电功率', desc:'纯电阻电路可用焦耳定律形式', cond:'纯电阻时 P=I^2R 成立', unit:'J / W', subject:'physics', grade:'g3', module:'电路', tags:['重点'] },
+  { id:'p-g3-cir-4', title:'焦耳定律', latex:'Q=I^2Rt', variants:['纯电阻：Q=W','非纯电阻：Q<W'], usage:'求电热', desc:'电流通过导体产生的热量', cond:'—', unit:'J', subject:'physics', grade:'g3', module:'电路', tags:['重点'] },
+  { id:'p-g3-cir-5', title:'串联与并联', latex:'R_{串}=R_1+R_2', variants:['\\frac{1}{R_{并}}=\\frac{1}{R_1}+\\frac{1}{R_2}','R_{并}=\\frac{R_1R_2}{R_1+R_2}'], usage:'求等效电阻', desc:'串联分压，并联分流', cond:'—', unit:'Ω', subject:'physics', grade:'g3', module:'电路', tags:['基础'] },
+  { id:'p-g3-mag-1', title:'安培力', latex:'F=BIL\\sin\\theta', variants:['F=BIL（垂直时）','方向：左手定则'], usage:'求磁场对电流的作用力', desc:'θ 为电流与磁场夹角', cond:'匀强磁场', unit:'N', subject:'physics', grade:'g3', module:'磁场', tags:['重点'] },
+  { id:'p-g3-mag-2', title:'洛伦兹力', latex:'F=qvB\\sin\\theta', variants:['F=qvB（垂直时）','方向：左手定则'], usage:'求磁场对运动电荷的作用力', desc:'θ 为速度与磁场夹角', cond:'匀强磁场', unit:'N', subject:'physics', grade:'g3', module:'磁场', tags:['重点'] },
+  { id:'p-g3-mag-3', title:'带电粒子圆周运动半径', latex:'r=\\frac{mv}{qB}', variants:['T=\\frac{2\\pi m}{qB}','\\omega=\\frac{qB}{m}'], usage:'求粒子在磁场中运动半径与周期', desc:'洛伦兹力提供向心力', cond:'v 垂直于 B', unit:'m', subject:'physics', grade:'g3', module:'磁场', tags:['重点'] },
+  { id:'p-g3-mag-4', title:'磁通量', latex:'\\Phi=BS\\cos\\theta', variants:['\\Phi=BS（垂直时）','单位：Wb'], usage:'求磁通量', desc:'θ 为面与磁场夹角相关量', cond:'匀强磁场', unit:'Wb', subject:'physics', grade:'g3', module:'磁场', tags:['重点'] },
+  { id:'p-g3-mag-5', title:'法拉第电磁感应定律', latex:'E=n\\frac{\\Delta\\Phi}{\\Delta t}', variants:['E=BLv（切割磁感线）','E=\\frac{1}{2}BL^2\\omega（旋转切割）'], usage:'求感应电动势', desc:'n 为线圈匝数', cond:'—', unit:'V', subject:'physics', grade:'g3', module:'磁场', tags:['重点'] },
+  { id:'p-g3-mag-6', title:'楞次定律', latex:'感应电流磁场阻碍原磁通量变化', variants:['“增反减同”','“来拒去留”'], usage:'判断感应电流方向', desc:'感应电流的磁场总要阻碍引起感应电流的磁通量变化', cond:'—', unit:'—', subject:'physics', grade:'g3', module:'磁场', tags:['易错'] },
+  { id:'p-g3-ac-1', title:'正弦交流电', latex:'e=E_m\\sin\\omega t', variants:['E_m=NBS\\omega','有效值 E=\\frac{E_m}{\\sqrt2}','\\omega=2\\pi f'], usage:'交流电瞬时值、有效值', desc:'从线圈平面与磁场平行时开始计时', cond:'—', unit:'V', subject:'physics', grade:'g3', module:'交流电与光学', tags:['重点'] },
+  { id:'p-g3-ac-2', title:'变压器', latex:'\\frac{U_1}{U_2}=\\frac{n_1}{n_2}', variants:['\\frac{I_1}{I_2}=\\frac{n_2}{n_1}','P_1=P_2'], usage:'理想变压器电压电流比', desc:'n 为匝数', cond:'理想变压器', unit:'—', subject:'physics', grade:'g3', module:'交流电与光学', tags:['重点'] },
+  { id:'p-g3-ac-3', title:'折射定律', latex:'n=\\frac{\\sin i}{\\sin r}', variants:['n=\\frac{c}{v}','临界角：\\sin C=\\frac{1}{n}'], usage:'求折射率、临界角', desc:'i 入射角，r 折射角', cond:'光从真空/空气射入介质', unit:'—', subject:'physics', grade:'g3', module:'交流电与光学', tags:['重点'] },
+  { id:'p-g3-ac-4', title:'双缝干涉条纹间距', latex:'\\Delta x=\\frac{L}{d}\\lambda', variants:['\\lambda=\\frac{d\\Delta x}{L}'], usage:'求波长或条纹间距', desc:'L 为屏距，d 为双缝间距', cond:'—', unit:'m', subject:'physics', grade:'g3', module:'交流电与光学', tags:['重点'] },
+  { id:'p-g3-ac-5', title:'光电效应', latex:'E_k=h\\nu-W_0', variants:['h\\nu_0=W_0','h=6.63\\times10^{-34}\\,\\text{J·s}'], usage:'求最大初动能、逸出功', desc:'ν0 为截止频率', cond:'入射光频率大于截止频率', unit:'J', subject:'physics', grade:'g3', module:'交流电与光学', tags:['重点'] },
+  { id:'p-g3-ac-6', title:'光子能量', latex:'E=h\\nu=\\frac{hc}{\\lambda}', variants:['p=\\frac{h}{\\lambda}（光子动量）'], usage:'求光子能量、动量', desc:'h 为普朗克常量', cond:'—', unit:'J', subject:'physics', grade:'g3', module:'交流电与光学', tags:['重点'] }
+];
+
+/* ================= 存储 ================= */
+const K = { formulas:'fa_formulas', custom:'fa_custom', fav:'fa_fav', tags:'fa_tags', settings:'fa_settings', deleted:'fa_deleted' };
+const Store = {
+  get(k, d){ try{ const r=localStorage.getItem(k); return r?JSON.parse(r):d; }catch{ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch{ return false; } },
+  getSettings(){ return this.get(K.settings, { theme:'auto', bgId:'bg-1', customBg:null, gradient:null }); },
+  saveSettings(s){ this.set(K.settings, s); },
+  getFav(){ return this.get(K.fav, []); },
+  toggleFav(id){ const f=this.getFav(); const i=f.indexOf(id); if(i>=0) f.splice(i,1); else f.push(id); this.set(K.fav,f); return f; },
+  getTags(){ return this.get(K.tags, []); },
+  addTag(t){ const tags=this.getTags(); if(!tags.includes(t)){ tags.push(t); this.set(K.tags,tags); } },
+  getCustom(){ return this.get(K.custom, {}); },
+  saveCustom(id, d){ const c=this.getCustom(); c[id]=d; this.set(K.custom,c); },
+  delCustom(id){ const c=this.getCustom(); delete c[id]; this.set(K.custom,c); },
+  getDeleted(){ return this.get(K.deleted, []); },
+  delBuiltin(id){ const d=this.getDeleted(); if(!d.includes(id)){ d.push(id); this.set(K.deleted,d); } },
+  allFormulas(){ const b=FORMULAS; const c=this.getCustom(); const del=this.getDeleted(); const m=new Map(); b.forEach(f=>{ if(!del.includes(f.id)) m.set(f.id,f); }); Object.values(c).forEach(f=>m.set(f.id,f)); return [...m.values()]; },
+  exportAll(){ return JSON.stringify({ version:1, exportedAt:new Date().toISOString(), custom:this.getCustom(), deleted:this.getDeleted(), fav:this.getFav(), tags:this.getTags(), settings:this.getSettings() }, null, 2); },
+  importAll(str){ const d=JSON.parse(str); if(d.custom) this.set(K.custom,d.custom); if(d.deleted) this.set(K.deleted,d.deleted); if(d.fav) this.set(K.fav,d.fav); if(d.tags) this.set(K.tags,d.tags); if(d.settings) this.set(K.settings,d.settings); return true; }
+};
+
+/* ================= UI ================= */
+const UI = {
+  state: { query:'', subject:null, grade:null, module:null, tag:null, onlyFav:false, editingId:null, bgCat:'all' },
+  init(){ this.cacheDom(); this.bindEvents(); this.renderFilters(); this.renderBackgrounds(); this.applyTheme(); this.render(); this.registerSW(); },
+  cacheDom(){ const $=id=>document.getElementById(id); this.dom={ list:$('formula-list'), empty:$('empty-tip'), search:$('search-input'), filterPanel:$('filter-panel'), settingsPanel:$('settings-panel'), filterSubject:$('filter-subject'), filterGrade:$('filter-grade'), filterModule:$('filter-module'), filterTag:$('filter-tag'), onlyFav:$('only-fav'), bgCats:$('bg-categories'), bgGrid:$('bg-grid'), editModal:$('edit-modal'), batchModal:$('batch-modal'), toast:$('toast') }; },
+  bindEvents(){
+    const $=id=>document.getElementById(id);
+    this.dom.search.addEventListener('input', e=>{ this.state.query=e.target.value.trim(); this.render(); });
+    $('btn-filter').addEventListener('click',()=>this.togglePanel('filter'));
+    $('btn-settings').addEventListener('click',()=>this.togglePanel('settings'));
+    $('btn-close-filter').addEventListener('click',()=>this.togglePanel('filter',false));
+    $('btn-close-settings').addEventListener('click',()=>this.togglePanel('settings',false));
+    $('btn-clear-filter').addEventListener('click',()=>{ this.state.subject=this.state.grade=this.state.module=this.state.tag=null; this.state.onlyFav=false; this.dom.onlyFav.checked=false; this.renderFilters(); this.render(); });
+    this.dom.onlyFav.addEventListener('change', e=>{ this.state.onlyFav=e.target.checked; this.render(); });
+    document.querySelectorAll('[data-theme]').forEach(btn=>{ btn.addEventListener('click',()=>{ const s=Store.getSettings(); s.theme=btn.dataset.theme; Store.saveSettings(s); this.applyTheme(); }); });
+    this.dom.bgCats.addEventListener('click', e=>{ const chip=e.target.closest('.chip'); if(!chip) return; this.state.bgCat=chip.dataset.cat; this.renderBackgrounds(); });
+    this.dom.bgGrid.addEventListener('click', e=>{ const item=e.target.closest('.bg-item'); if(!item) return; const s=Store.getSettings(); s.bgId=item.dataset.id; s.customBg=null; s.gradient=null; Store.saveSettings(s); this.applyTheme(); });
+    $('btn-upload-bg').addEventListener('click',()=>$('bg-upload').click());
+    $('bg-upload').addEventListener('change', e=>{ const file=e.target.files[0]; if(!file) return; const r=new FileReader(); r.onload=()=>{ const s=Store.getSettings(); s.customBg=r.result; s.gradient=null; Store.saveSettings(s); this.applyTheme(); this.toast('背景已更新'); }; r.readAsDataURL(file); });
+    $('btn-apply-grad').addEventListener('click',()=>{ const c1=$('grad-c1').value, c2=$('grad-c2').value; const s=Store.getSettings(); s.gradient=`linear-gradient(135deg, ${c1}, ${c2})`; s.customBg=null; Store.saveSettings(s); this.applyTheme(); this.toast('渐变背景已应用'); });
+    $('btn-add').addEventListener('click',()=>this.openEdit(null));
+    $('btn-cancel-formula').addEventListener('click',()=>this.closeEdit());
+    $('btn-save-formula').addEventListener('click',()=>this.saveFormula());
+    $('btn-batch').addEventListener('click',()=>this.dom.batchModal.classList.remove('hidden'));
+    $('btn-batch-cancel').addEventListener('click',()=>this.dom.batchModal.classList.add('hidden'));
+    $('btn-batch-import').addEventListener('click',()=>this.batchImport());
+    $('btn-export').addEventListener('click',()=>this.exportBackup());
+    $('btn-import').addEventListener('click',()=>$('import-file').click());
+    $('import-file').addEventListener('change', e=>this.importBackup(e));
+  },
+  togglePanel(which, show){ const p=which==='filter'?this.dom.filterPanel:this.dom.settingsPanel; const o=which==='filter'?this.dom.settingsPanel:this.dom.filterPanel; if(typeof show==='undefined') show=p.classList.contains('hidden'); o.classList.add('hidden'); p.classList.toggle('hidden', !show); },
+  renderFilters(){
+    const all=Store.allFormulas();
+    const subjects=[{v:null,t:'全部'},{v:'math',t:'数学'},{v:'physics',t:'物理'}];
+    const grades=[{v:null,t:'全部'},{v:'g1',t:'高一'},{v:'g2',t:'高二'},{v:'g3',t:'高三'}];
+    this.dom.filterSubject.innerHTML=subjects.map(s=>`<button class="chip${this.state.subject===s.v?' active':''}" data-v="${s.v??''}">${s.t}</button>`).join('');
+    this.dom.filterGrade.innerHTML=grades.map(s=>`<button class="chip${this.state.grade===s.v?' active':''}" data-v="${s.v??''}">${s.t}</button>`).join('');
+    const pool=all.filter(f=>(!this.state.subject||f.subject===this.state.subject)&&(!this.state.grade||f.grade===this.state.grade));
+    const modules=[...new Set(pool.map(f=>f.module))];
+    this.dom.filterModule.innerHTML=`<button class="chip${!this.state.module?' active':''}" data-v="">全部</button>`+modules.map(m=>`<button class="chip${this.state.module===m?' active':''}" data-v="${m}">${m}</button>`).join('');
+    const tags=Store.getTags();
+    this.dom.filterTag.innerHTML=`<button class="chip${!this.state.tag?' active':''}" data-v="">全部</button>`+tags.map(t=>`<button class="chip${this.state.tag===t?' active':''}" data-v="${t}">${t}</button>`).join('');
+    const bind=(el,key)=>{ el.onclick=e=>{ const chip=e.target.closest('.chip'); if(!chip) return; this.state[key]=chip.dataset.v||null; this.renderFilters(); this.render(); }; };
+    bind(this.dom.filterSubject,'subject'); bind(this.dom.filterGrade,'grade'); bind(this.dom.filterModule,'module'); bind(this.dom.filterTag,'tag');
+  },
+  renderBackgrounds(){
+    const cats=['all',...BACKGROUNDS.categories];
+    this.dom.bgCats.innerHTML=cats.map(c=>`<button class="chip${this.state.bgCat===c?' active':''}" data-cat="${c}">${c==='all'?'全部':c}</button>`).join('');
+    const s=Store.getSettings(); const dark=document.body.classList.contains('dark');
+    const list=BACKGROUNDS.list.filter(b=>this.state.bgCat==='all'||b.cat===this.state.bgCat);
+    this.dom.bgGrid.innerHTML=list.map(b=>{ const css=dark?b.cssDark:b.cssLight; return `<div class="bg-item${s.bgId===b.id?' active':''}" data-id="${b.id}" title="${b.name}"><div class="bg-preview" style="background:${css}"></div><span>${b.name}</span></div>`; }).join('');
+  },
+  applyTheme(){
+    const s=Store.getSettings(); let dark=false;
+    if(s.theme==='dark') dark=true; else if(s.theme==='auto') dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.body.classList.toggle('dark',dark); document.body.classList.toggle('light',!dark);
+    document.body.style.background='';
+    if(s.customBg){ document.body.style.background=`url(${s.customBg}) center/cover fixed`; }
+    else if(s.gradient){ document.body.style.background=s.gradient+' fixed'; }
+    else { const bg=BACKGROUNDS.byId[s.bgId]||BACKGROUNDS.list[0]; document.body.style.background=(dark?bg.cssDark:bg.cssLight)+' fixed'; }
+    if(this.dom.bgGrid) this.renderBackgrounds();
+  },
+  filterList(){
+    const fav=Store.getFav(); let list=Store.allFormulas(); const q=this.state.query.toLowerCase();
+    if(q) list=list.filter(f=>(f.title||'').toLowerCase().includes(q)||(f.latex||'').toLowerCase().includes(q)||(f.desc||'').toLowerCase().includes(q)||(f.usage||'').toLowerCase().includes(q)||(f.module||'').toLowerCase().includes(q)||(f.tags||[]).some(t=>t.toLowerCase().includes(q)));
+    if(this.state.subject) list=list.filter(f=>f.subject===this.state.subject);
+    if(this.state.grade) list=list.filter(f=>f.grade===this.state.grade);
+    if(this.state.module) list=list.filter(f=>f.module===this.state.module);
+    if(this.state.tag) list=list.filter(f=>(f.tags||[]).includes(this.state.tag));
+    if(this.state.onlyFav) list=list.filter(f=>fav.includes(f.id));
+    return list;
+  },
+  render(){
+    const list=this.filterList(); const fav=Store.getFav();
+    if(!list.length){ this.dom.list.innerHTML=''; this.dom.empty.classList.remove('hidden'); return; }
+    this.dom.empty.classList.add('hidden');
+    const groups={}; list.forEach(f=>{ const key=`${f.subject}|${f.grade}|${f.module}`; (groups[key]=groups[key]||[]).push(f); });
+    const sn={math:'数学',physics:'物理'}; const gn={g1:'高一',g2:'高二',g3:'高三'};
+    const keys=Object.keys(groups).sort((a,b)=>{ const[sa,ga]=a.split('|'),[sb,gb]=b.split('|'); const so={math:0,physics:1}; return so[sa]-so[sb]||ga.localeCompare(gb)||a.localeCompare(b); });
+    let html='';
+    keys.forEach(key=>{ const[subject,grade,module]=key.split('|'); html+=`<h2 class="group-title">${sn[subject]||subject} · ${gn[grade]||grade} · ${module}</h2>`; groups[key].forEach(f=>{ html+=this.renderCard(f,fav.includes(f.id)); }); });
+    this.dom.list.innerHTML=html;
+    this.bindCardEvents(); this.renderLatex();
+  },
+  renderCard(f,isFav){
+    const tags=(f.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
+    const variants=(f.variants||[]).filter(Boolean).map(v=>`<div class="variant">${this.escapeHtml(v)}</div>`).join('');
+    return `<article class="card" data-id="${f.id}">
+      <div class="card-head"><h3 class="card-title">${this.escapeHtml(f.title||'')}</h3><div class="card-actions">
+      <button class="icon-btn fav-btn ${isFav?'active':''}" data-action="fav">${isFav?'★':'☆'}</button>
+      <button class="icon-btn" data-action="edit">✎</button>
+      <button class="icon-btn" data-action="del">🗑</button></div></div>
+      <div class="formula">$$${f.latex||''}$$</div>
+      ${variants?`<div class="section"><span class="label">等价变形</span>${variants}</div>`:''}
+      ${f.usage?`<div class="section"><span class="label">典型应用</span><div class="text">${this.escapeHtml(f.usage)}</div></div>`:''}
+      ${f.desc?`<div class="section"><span class="label">说明</span><div class="text">${this.escapeHtml(f.desc)}</div></div>`:''}
+      <div class="meta">${f.cond?`<span class="meta-item"><b>适用条件</b>${this.escapeHtml(f.cond)}</span>`:''}${f.unit?`<span class="meta-item"><b>单位</b>${this.escapeHtml(f.unit)}</span>`:''}</div>
+      ${tags?`<div class="tags">${tags}</div>`:''}
+    </article>`;
+  },
+  bindCardEvents(){
+    if(this._cardBound) return; this._cardBound=true;
+    this.dom.list.addEventListener('click', e=>{
+      const btn=e.target.closest('[data-action]'); if(!btn) return;
+      const card=btn.closest('.card'); const id=card.dataset.id; const action=btn.dataset.action;
+      if(action==='fav'){ const fav=Store.toggleFav(id); btn.classList.toggle('active',fav.includes(id)); btn.textContent=fav.includes(id)?'★':'☆'; if(this.state.onlyFav) this.render(); }
+      else if(action==='edit'){ this.openEdit(id); }
+      else if(action==='del'){ this.confirmDelete(id); }
+    });
+  },
+  renderLatex(){ if(window.renderMathInElement){ try{ renderMathInElement(this.dom.list,{ delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false }); }catch(e){} } },
+  openEdit(id){
+    this.state.editingId=id; const f=id?Store.allFormulas().find(x=>x.id===id):null; const $=x=>document.getElementById(x);
+    $('edit-title').textContent=id?'编辑公式':'添加公式';
+    $('f-title').value=f?.title||''; $('f-latex').value=f?.latex||''; $('f-variants').value=(f?.variants||[]).join('\n');
+    $('f-usage').value=f?.usage||''; $('f-desc').value=f?.desc||''; $('f-cond').value=f?.cond||''; $('f-unit').value=f?.unit||'';
+    $('f-subject').value=f?.subject||'math'; $('f-grade').value=f?.grade||'g1'; $('f-module').value=f?.module||''; $('f-tags').value=(f?.tags||[]).join(',');
+    this.dom.editModal.classList.remove('hidden');
+  },
+  closeEdit(){ this.dom.editModal.classList.add('hidden'); this.state.editingId=null; },
+  saveFormula(){
+    const $=x=>document.getElementById(x); const title=$('f-title').value.trim(); const latex=$('f-latex').value.trim();
+    if(!title||!latex){ this.toast('标题和公式不能为空'); return; }
+    const tags=$('f-tags').value.split(/[,，]/).map(s=>s.trim()).filter(Boolean); tags.forEach(t=>Store.addTag(t));
+    const data={ id:this.state.editingId||('user-'+Date.now()), title, latex, variants:$('f-variants').value.split('\n').map(s=>s.trim()).filter(Boolean), usage:$('f-usage').value.trim(), desc:$('f-desc').value.trim(), cond:$('f-cond').value.trim(), unit:$('f-unit').value.trim(), subject:$('f-subject').value, grade:$('f-grade').value, module:$('f-module').value.trim()||'未分类', tags };
+    Store.saveCustom(data.id,data); this.closeEdit(); this.renderFilters(); this.render(); this.toast('已保存');
+  },
+  confirmDelete(id){ if(!confirm('确定删除这条公式吗？')) return; Store.delCustom(id); Store.delBuiltin(id); this.renderFilters(); this.render(); this.toast('已删除'); },
+  batchImport(){
+    const text=document.getElementById('batch-text').value.trim(); if(!text){ this.toast('请输入内容'); return; }
+    try{ let arr=JSON.parse(text); if(!Array.isArray(arr)) arr=[arr]; let count=0;
+      arr.forEach((item,i)=>{ if(!item.title||!item.latex) return; const data={ id:item.id||('batch-'+Date.now()+'-'+i), title:item.title, latex:item.latex, variants:item.variants||[], usage:item.usage||'', desc:item.desc||'', cond:item.cond||'', unit:item.unit||'', subject:item.subject||'math', grade:item.grade||'g1', module:item.module||'未分类', tags:item.tags||[] }; (data.tags||[]).forEach(t=>Store.addTag(t)); Store.saveCustom(data.id,data); count++; });
+      this.dom.batchModal.classList.add('hidden'); document.getElementById('batch-text').value=''; this.renderFilters(); this.render(); this.toast(`已导入 ${count} 条`);
+    }catch(e){ this.toast('JSON 格式错误：'+e.message); }
+  },
+  exportBackup(){ const json=Store.exportAll(); const blob=new Blob([json],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`formula-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url); this.toast('已导出备份'); },
+  importBackup(e){ const file=e.target.files[0]; if(!file) return; const r=new FileReader(); r.onload=()=>{ try{ Store.importAll(r.result); this.applyTheme(); this.renderFilters(); this.render(); this.toast('导入成功'); }catch(err){ this.toast('导入失败：'+err.message); } }; r.readAsText(file); e.target.value=''; },
+  escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); },
+  toast(msg){ const el=this.dom.toast; el.textContent=msg; el.classList.remove('hidden'); clearTimeout(this._t); this._t=setTimeout(()=>el.classList.add('hidden'),2000); },
+  registerSW(){
+    if('serviceWorker' in navigator){
+      const swCode = `
+        const C='formula-single-v1';
+        self.addEventListener('install',e=>{ self.skipWaiting(); });
+        self.addEventListener('activate',e=>{ e.waitUntil(clients.claim()); });
+        self.addEventListener('fetch',e=>{
+          if(e.request.method!=='GET') return;
+          e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).then(r=>{ const copy=r.clone(); caches.open(C).then(ca=>ca.put(e.request,copy)).catch(()=>{}); return r; }).catch(()=>c)));
+        });
+      `;
+      try{
+        const blob=new Blob([swCode],{type:'application/javascript'});
+        const url=URL.createObjectURL(blob);
+        navigator.serviceWorker.register(url).catch(()=>{});
+      }catch(e){}
+    }
+  }
+};
+
+document.addEventListener('DOMContentLoaded',()=>{
+  UI.init();
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ if(Store.getSettings().theme==='auto') UI.applyTheme(); });
+  window.addEventListener('load',()=>{ setTimeout(()=>UI.render(),400); });
+});
+</script>
+</body>
+</html>
